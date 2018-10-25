@@ -8,6 +8,7 @@ import { MyApp } from "./app.component";
 import { LoginPage } from "../pages/login/login";
 import { SignUpPage } from "../pages/sign-up/sign-up";
 import { CognitoServiceProvider } from '../providers/cognito-service/cognito-service';
+import { SystemVariableProvider } from '../providers/system-variable/system-variable';
 
 @NgModule({
   declarations: [MyApp, LoginPage, SignUpPage],
@@ -18,7 +19,8 @@ import { CognitoServiceProvider } from '../providers/cognito-service/cognito-ser
     StatusBar,
     SplashScreen,
     { provide: ErrorHandler, useClass: IonicErrorHandler },
-    CognitoServiceProvider
+    CognitoServiceProvider,
+    SystemVariableProvider
   ]
 })
 export class AppModule {}

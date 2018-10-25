@@ -1,32 +1,23 @@
 import { Injectable } from "@angular/core";
 
 import * as AWSCognito from "amazon-cognito-identity-js";
+import { SystemVariableProvider } from "../system-variable/system-variable";
 
-/*
-  Generated class for the CognitoServiceProvider provider.
-
-  See https://angular.io/guide/dependency-injection for more info on providers
-  and Angular DI.
-*/
 @Injectable()
 export class CognitoServiceProvider {
-  _POOL_DATA = {
-    UserPoolId: "<< ADD YOUR USER POOL ID >>",
-    ClientId: "<< ADD CLIENT ID >>"
-  };
 
-  constructor() {}
+  private POOL_SETTING = new SystemVariableProvider().SYSTEM_PARAMS.COGNITO_POOL;
+  
+  _USER_POOL = new AWSCognito.CognitoUserPool(this.POOL_SETTING);
 
   signUp(email, password) {
     return new Promise((resolved, reject) => {
-      const userPool = new AWSCognito.CognitoUserPool(this._POOL_DATA);
-
       let userAttribute = [];
       userAttribute.push(
         new AWSCognito.CognitoUserAttribute({ Name: "email", Value: email })
       );
 
-      userPool.signUp(email, password, userAttribute, null, function(
+      this._USER_POOL.signUp(email, password, userAttribute, null, function(
         err,
         result
       ) {
@@ -41,11 +32,9 @@ export class CognitoServiceProvider {
 
   confirmUser(verificationCode, userName) {
     return new Promise((resolved, reject) => {
-      const userPool = new AWSCognito.CognitoUserPool(this._POOL_DATA);
-
       const cognitoUser = new AWSCognito.CognitoUser({
         Username: userName,
-        Pool: userPool
+        Pool: this._USER_POOL
       });
 
       cognitoUser.confirmRegistration(verificationCode, true, function(
@@ -63,8 +52,6 @@ export class CognitoServiceProvider {
 
   authenticate(email, password) {
     return new Promise((resolved, reject) => {
-      const userPool = new AWSCognito.CognitoUserPool(this._POOL_DATA);
-
       const authDetails = new AWSCognito.AuthenticationDetails({
         Username: email,
         Password: password
@@ -72,7 +59,7 @@ export class CognitoServiceProvider {
 
       const cognitoUser = new AWSCognito.CognitoUser({
         Username: email,
-        Pool: userPool
+        Pool: this._USER_POOL
       });
 
       cognitoUser.authenticateUser(authDetails, {
@@ -99,6 +86,22 @@ export class CognitoServiceProvider {
           });
         }
       });
+    });
+  }
+
+  getLoggedUser() {
+    return new Promise((resolved, reject) => {
+      var cognitoUser = this._USER_POOL.getCurrentUser();
+
+      if (cognitoUser != null) {
+        cognitoUser.getSession(function(err, result) {
+          if (result) {
+            resolved(result.getIdToken().getJwtToken());
+          } else {
+            reject(err);
+          }
+        });
+      }
     });
   }
 }
