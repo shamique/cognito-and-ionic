@@ -16,6 +16,6 @@ https://medium.com/@shamique/aws-cognito-service-in-ionic-b234f21c27ef
 <ul>
 <li>Clone the project into your machine</li>
 <li>Inside the project folder, run <code>npm install</code></li>
-<li>Add <b>UserPoolId</b> and <b>ClientId</b> in cognito-service.ts file (../providers/cognito-service/cognito-service.ts)
+<li>Add <b>Region</b>, <b>UserPoolId</b> and <b>ClientId</b> in system-variable.ts file (../providers/system-variable/system-variable.ts)
 <li>run the project, <code>ionic serve</code></li>
 </ul>
